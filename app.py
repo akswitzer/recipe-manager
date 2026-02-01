@@ -72,7 +72,11 @@ def new_recipe():
             servings=int(request.form.get('servings', 4)),
             prep_time=int(request.form['prep_time']) if request.form.get('prep_time') else None,
             cook_time=int(request.form['cook_time']) if request.form.get('cook_time') else None,
-            instructions=request.form.get('instructions', '')
+            instructions=request.form.get('instructions', ''),
+            calories=int(request.form['calories']) if request.form.get('calories') else None,
+            protein=float(request.form['protein']) if request.form.get('protein') else None,
+            carbs=float(request.form['carbs']) if request.form.get('carbs') else None,
+            fat=float(request.form['fat']) if request.form.get('fat') else None
         )
 
         # Add ingredients
@@ -113,6 +117,10 @@ def edit_recipe(id):
         recipe.prep_time = int(request.form['prep_time']) if request.form.get('prep_time') else None
         recipe.cook_time = int(request.form['cook_time']) if request.form.get('cook_time') else None
         recipe.instructions = request.form.get('instructions', '')
+        recipe.calories = int(request.form['calories']) if request.form.get('calories') else None
+        recipe.protein = float(request.form['protein']) if request.form.get('protein') else None
+        recipe.carbs = float(request.form['carbs']) if request.form.get('carbs') else None
+        recipe.fat = float(request.form['fat']) if request.form.get('fat') else None
 
         # Clear existing ingredients and re-add
         recipe.ingredients.clear()

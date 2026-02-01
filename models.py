@@ -17,6 +17,13 @@ class Recipe(db.Model):
     prep_time = db.Column(db.Integer)  # minutes
     cook_time = db.Column(db.Integer)  # minutes
     instructions = db.Column(db.Text)
+
+    # Macros per serving
+    calories = db.Column(db.Integer)
+    protein = db.Column(db.Float)  # grams
+    carbs = db.Column(db.Float)    # grams
+    fat = db.Column(db.Float)      # grams
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -39,6 +46,10 @@ class Recipe(db.Model):
             'prep_time': self.prep_time,
             'cook_time': self.cook_time,
             'instructions': self.instructions,
+            'calories': self.calories,
+            'protein': self.protein,
+            'carbs': self.carbs,
+            'fat': self.fat,
             'ingredients': [i.to_dict() for i in self.ingredients]
         }
 

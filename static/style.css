@@ -748,3 +748,68 @@ body {
         width: 100%;
     }
 }
+
+/* Macros Display */
+.macros-display {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.macros-display h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+}
+
+.macro-note {
+    font-weight: 400;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+}
+
+.macros-grid {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.macro-item {
+    background: var(--color-bg);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    text-align: center;
+    min-width: 80px;
+    border-left: 3px solid var(--color-border);
+}
+
+.macro-item.macro-calories {
+    border-left-color: #e07a5f;
+}
+
+.macro-item.macro-protein {
+    border-left-color: #81b29a;
+}
+
+.macro-item.macro-carbs {
+    border-left-color: #f4a261;
+}
+
+.macro-item.macro-fat {
+    border-left-color: #89b4c4;
+}
+
+.macro-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.macro-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    margin-top: 0.25rem;
+}

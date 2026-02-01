@@ -36,6 +36,38 @@
                     <span class="meta-value">{{ recipe.servings }}</span>
                 </div>
             </div>
+
+            {% if recipe.calories or recipe.protein or recipe.carbs or recipe.fat %}
+            <div class="macros-display">
+                <h3>Nutrition <span class="macro-note">(per serving)</span></h3>
+                <div class="macros-grid">
+                    {% if recipe.calories %}
+                    <div class="macro-item macro-calories">
+                        <span class="macro-value">{{ recipe.calories }}</span>
+                        <span class="macro-label">Calories</span>
+                    </div>
+                    {% endif %}
+                    {% if recipe.protein %}
+                    <div class="macro-item macro-protein">
+                        <span class="macro-value">{{ recipe.protein }}g</span>
+                        <span class="macro-label">Protein</span>
+                    </div>
+                    {% endif %}
+                    {% if recipe.carbs %}
+                    <div class="macro-item macro-carbs">
+                        <span class="macro-value">{{ recipe.carbs }}g</span>
+                        <span class="macro-label">Carbs</span>
+                    </div>
+                    {% endif %}
+                    {% if recipe.fat %}
+                    <div class="macro-item macro-fat">
+                        <span class="macro-value">{{ recipe.fat }}g</span>
+                        <span class="macro-label">Fat</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
         </div>
 
         <div class="recipe-actions">
