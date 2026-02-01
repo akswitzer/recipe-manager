@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Recipes - Recipe Manager{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>My Recipes</h1>
+    <a href="{{ url_for('new_recipe') }}" class="btn btn-primary">+ Add Recipe</a>
+</div>
+
+<form class="search-bar" method="GET" action="{{ url_for('index') }}">
+    <input type="text"
+           name="search"
+           placeholder="Search recipes or ingredients..."
+           value="{{ search }}"
+           class="search-input">
+    <select name="category" class="category-select">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+            <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-secondary">Search</button>
+    {% if search or selected_category %}
+        <a href="{{ url_for('index') }}" class="btn btn-ghost">Clear</a>
+    {% endif %}
+</form>
+
+{% if recipes %}
+    <div class="recipe-grid">
+        {% for recipe in recipes %}
+            <a href="{{ url_for('view_recipe', id=recipe.id) }}" class="recipe-card category-{{ recipe.category|lower }}">
+                <div class="card-category">{{ recipe.category }}</div>
+                <h2 class="card-title">{{ recipe.title }}</h2>
+                {% if recipe.description %}
+                    <p class="card-description">{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}...{% endif %}</p>
+                {% endif %}
+                <div class="card-meta">
+                    {% if recipe.total_time %}
+                        <span class="meta-item">{{ recipe.total_time }} min</span>
+                    {% endif %}
+                    <span class="meta-item">{{ recipe.servings }} servings</span>
+                    <span class="meta-item">{{ recipe.ingredients|length }} ingredients</span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        {% if search or selected_category %}
+            <h2>No recipes found</h2>
+            <p>Try adjusting your search or filters</p>
+        {% else %}
+            <h2>No recipes yet</h2>
+            <p>Add your first recipe to get started!</p>
+            <a href="{{ url_for('new_recipe') }}" class="btn btn-primary">+ Add Recipe</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

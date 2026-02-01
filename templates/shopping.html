@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping List - Recipe Manager{% endblock %}
+
+{% block content %}
+<div class="shopping-page">
+    <h1>Shopping List</h1>
+    <p class="page-description">Select recipes to generate a combined shopping list</p>
+
+    <form method="POST" class="shopping-form">
+        <div class="recipe-selector">
+            <h2>Select Recipes</h2>
+
+            {% if recipes %}
+                <div class="recipe-checkboxes">
+                    {% for recipe in recipes %}
+                        <div class="recipe-checkbox-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox"
+                                       name="recipes"
+                                       value="{{ recipe.id }}"
+                                       {% if recipe.id in selected_ids %}checked{% endif %}
+                                       onchange="toggleServings(this, {{ recipe.id }})">
+                                <span class="recipe-name">{{ recipe.title }}</span>
+                                <span class="recipe-category category-{{ recipe.category|lower }}">{{ recipe.category }}</span>
+                            </label>
+                            <div class="servings-input-wrapper" id="servings-wrapper-{{ recipe.id }}" style="{% if recipe.id not in selected_ids %}display: none;{% endif %}">
+                                <label>Servings:</label>
+                                <input type="number"
+                                       name="servings_{{ recipe.id }}"
+                                       value="{{ recipe.servings }}"
+                                       min="1"
+                                       class="servings-input-small">
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Generate Shopping List</button>
+            {% else %}
+                <div class="empty-state">
+                    <p>No recipes yet. Add some recipes first!</p>
+                    <a href="{{ url_for('new_recipe') }}" class="btn btn-primary">+ Add Recipe</a>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if shopping_items %}
+            <div class="shopping-list-result">
+                <h2>Your Shopping List</h2>
+                <p class="item-count">{{ shopping_items|length }} items</p>
+
+                <ul class="shopping-list">
+                    {% for item in shopping_items %}
+                        <li class="shopping-item">
+                            <label class="shopping-item-label">
+                                <input type="checkbox" class="shopping-checkbox">
+                                <span class="item-text">
+                                    {% if item.amount %}
+                                        <strong>{{ "%.2g"|format(item.amount) }}</strong>
+                                    {% endif %}
+                                    {% if item.unit %}
+                                        {{ item.unit }}
+                                    {% endif %}
+                                    {{ item.name }}
+                                </span>
+                            </label>
+                            <span class="item-recipes" title="Used in: {{ item.recipes|join(', ') }}">
+                                ({{ item.recipes|length }} recipe{% if item.recipes|length > 1 %}s{% endif %})
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <button type="button" class="btn btn-secondary" onclick="copyList()">Copy to Clipboard</button>
+            </div>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleServings(checkbox, recipeId) {
+    const wrapper = document.getElementById(`servings-wrapper-${recipeId}`);
+    wrapper.style.display = checkbox.checked ? 'flex' : 'none';
+}
+
+function copyList() {
+    const items = document.querySelectorAll('.shopping-item .item-text');
+    const text = Array.from(items).map(item => '- ' + item.textContent.trim()).join('\n');
+
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Shopping list copied to clipboard!');
+    }).catch(err => {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('Shopping list copied to clipboard!');
+    });
+}
+</script>
+{% endblock %}

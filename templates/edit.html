@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}{% if recipe %}Edit {{ recipe.title }}{% else %}New Recipe{% endif %} - Recipe Manager{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <h1>{% if recipe %}Edit Recipe{% else %}New Recipe{% endif %}</h1>
+
+    <form method="POST" class="recipe-form">
+        <div class="form-section">
+            <h2>Basic Info</h2>
+
+            <div class="form-group">
+                <label for="title">Recipe Title *</label>
+                <input type="text"
+                       id="title"
+                       name="title"
+                       value="{{ recipe.title if recipe else '' }}"
+                       required
+                       placeholder="e.g., Grandma's Apple Pie">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description"
+                          name="description"
+                          rows="2"
+                          placeholder="A short description of this recipe">{{ recipe.description if recipe else '' }}</textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                        {% for cat in categories %}
+                            <option value="{{ cat }}" {% if recipe and recipe.category == cat %}selected{% elif not recipe and cat == 'Dinner' %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="servings">Servings</label>
+                    <input type="number"
+                           id="servings"
+                           name="servings"
+                           value="{{ recipe.servings if recipe else 4 }}"
+                           min="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="prep_time">Prep Time (min)</label>
+                    <input type="number"
+                           id="prep_time"
+                           name="prep_time"
+                           value="{{ recipe.prep_time if recipe and recipe.prep_time else '' }}"
+                           min="0"
+                           placeholder="15">
+                </div>
+
+                <div class="form-group">
+                    <label for="cook_time">Cook Time (min)</label>
+                    <input type="number"
+                           id="cook_time"
+                           name="cook_time"
+                           value="{{ recipe.cook_time if recipe and recipe.cook_time else '' }}"
+                           min="0"
+                           placeholder="30">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Ingredients</h2>
+            <p class="form-hint">Add each ingredient with an optional amount and unit</p>
+
+            <div id="ingredients-list">
+                {% if recipe and recipe.ingredients %}
+                    {% for ing in recipe.ingredients %}
+                        <div class="ingredient-row">
+                            <input type="number"
+                                   name="ingredient_amount[]"
+                                   value="{{ ing.amount if ing.amount else '' }}"
+                                   placeholder="Amt"
+                                   step="any"
+                                   class="ingredient-amount-input">
+                            <select name="ingredient_unit[]" class="ingredient-unit-select">
+                                {% for unit in units %}
+                                    <option value="{{ unit }}" {% if ing.unit == unit %}selected{% endif %}>{{ unit if unit else '-' }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="text"
+                                   name="ingredient_name[]"
+                                   value="{{ ing.name }}"
+                                   placeholder="Ingredient name"
+                                   class="ingredient-name-input">
+                            <button type="button" class="btn btn-icon remove-ingredient" onclick="removeIngredient(this)">x</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="ingredient-row">
+                        <input type="number" name="ingredient_amount[]" placeholder="Amt" step="any" class="ingredient-amount-input">
+                        <select name="ingredient_unit[]" class="ingredient-unit-select">
+                            {% for unit in units %}
+                                <option value="{{ unit }}">{{ unit if unit else '-' }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="ingredient_name[]" placeholder="Ingredient name" class="ingredient-name-input">
+                        <button type="button" class="btn btn-icon remove-ingredient" onclick="removeIngredient(this)">x</button>
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="button" class="btn btn-secondary" onclick="addIngredient()">+ Add Ingredient</button>
+        </div>
+
+        <div class="form-section">
+            <h2>Instructions</h2>
+            <p class="form-hint">Write each step on a new line</p>
+
+            <div class="form-group">
+                <textarea id="instructions"
+                          name="instructions"
+                          rows="8"
+                          placeholder="1. Preheat oven to 350°F...&#10;2. Mix dry ingredients...&#10;3. Add wet ingredients...">{{ recipe.instructions if recipe else '' }}</textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if recipe %}Save Changes{% else %}Create Recipe{% endif %}</button>
+            <a href="{% if recipe %}{{ url_for('view_recipe', id=recipe.id) }}{% else %}{{ url_for('index') }}{% endif %}" class="btn btn-ghost">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const unitOptions = `{% for unit in units %}<option value="{{ unit }}">{{ unit if unit else '-' }}</option>{% endfor %}`;
+
+function addIngredient() {
+    const list = document.getElementById('ingredients-list');
+    const row = document.createElement('div');
+    row.className = 'ingredient-row';
+    row.innerHTML = `
+        <input type="number" name="ingredient_amount[]" placeholder="Amt" step="any" class="ingredient-amount-input">
+        <select name="ingredient_unit[]" class="ingredient-unit-select">${unitOptions}</select>
+        <input type="text" name="ingredient_name[]" placeholder="Ingredient name" class="ingredient-name-input">
+        <button type="button" class="btn btn-icon remove-ingredient" onclick="removeIngredient(this)">x</button>
+    `;
+    list.appendChild(row);
+    row.querySelector('.ingredient-name-input').focus();
+}
+
+function removeIngredient(btn) {
+    const row = btn.parentElement;
+    const list = document.getElementById('ingredients-list');
+    if (list.children.length > 1) {
+        row.remove();
+    } else {
+        // Clear the last row instead of removing
+        row.querySelectorAll('input').forEach(i => i.value = '');
+        row.querySelector('select').selectedIndex = 0;
+    }
+}
+</script>
+{% endblock %}
